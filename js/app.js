@@ -107,34 +107,54 @@ function renderPairsGrid(state) {
   if (!container) return;
 
   container.innerHTML = '';
-  const myDeviceId = getDeviceId();
+  const myDeviceId   = getDeviceId();
+  const savedName    = getSavedUserName().trim().toLowerCase();
 
   KHATMAH_PAIRS.forEach(pair => {
     const pairState = state[pair.pairId] || { status: 'available' };
-    const isMine = pairState.deviceToken === myDeviceId;
-    const cacheInfo = pairCacheStatus(pair.pairId);
-    const isFullyCached = cacheInfo.cached === cacheInfo.total;
+
+    // Primary ownership: same deviceToken
+    const isMineByToken = pairState.deviceToken === myDeviceId;
+
+    // iOS PWA fallback: different localStorage context but same name
+    // Only apply when status is reserved (not completed) and name matches
+    const isMineByName = !isMineByToken
+      && pairState.status === 'reserved'
+      && savedName
+      && pairState.readerName
+      && pairState.readerName.trim().toLowerCase() === savedName;
+
+    const isMine = isMineByToken || isMineByName;
+
+    // If iOS context mismatch detected → silently re-claim the deviceToken
+    if (isMineByName && !isMineByToken) {
+      khatmahManager.reclaimPair(pair.pairId, myDeviceId);
+    }
+
+    const cacheInfo      = pairCacheStatus(pair.pairId);
+    const isFullyCached  = cacheInfo.cached === cacheInfo.total;
 
     // Apply Filter
     if (activeFilter === 'available' && pairState.status !== 'available') return;
-    if (activeFilter === 'reserved' && pairState.status !== 'reserved') return;
+    if (activeFilter === 'reserved'  && pairState.status !== 'reserved')  return;
     if (activeFilter === 'completed' && pairState.status !== 'completed') return;
-    if (activeFilter === 'my' && !isMine) return;
+    if (activeFilter === 'my'        && !isMine)                           return;
 
     const card = document.createElement('div');
     card.className = `juz-card ${isMine ? 'my-juz' : ''}`;
 
-    let statusBadgeHTML = '';
+    let statusBadgeHTML  = '';
     let actionButtonsHTML = '';
-    // Offline indicator
+
+    // Offline download indicator (only shown on owner's card)
     const offlineBadge = isMine
-      ? `<span class="offline-pill" title="${isFullyCached ? 'محفوظ أوفلاين' : 'لسه بيتحمل'}" style="font-size:0.7rem;color:${isFullyCached ? '#10b981' : '#f59e0b'}">
-           ${isFullyCached ? '📥 محفوظ' : '⏳ بيتحمل'}
+      ? `<span style="font-size:0.7rem;color:${isFullyCached ? '#10b981' : '#f59e0b'}">
+           ${isFullyCached ? '📥 محفوظ أوفلاين' : '⏳ بيتحمل...'}
          </span>`
       : '';
 
     if (pairState.status === 'available') {
-      statusBadgeHTML = `<span class="juz-status-badge available">🟢 متاح</span>`;
+      statusBadgeHTML   = `<span class="juz-status-badge available">🟢 متاح</span>`;
       actionButtonsHTML = `
         <button class="btn-card btn-reserve" onclick="openReservationModal(${pair.pairId})">
           ✨ احجز الورد ده
@@ -145,7 +165,7 @@ function renderPairsGrid(state) {
       if (isMine) {
         actionButtonsHTML = `
           <button class="btn-card btn-read" onclick="openReaderModal(${pair.pairId})">
-            📖 اقرأ
+            📖 اقرأ وردك
           </button>
           <button class="btn-card btn-reserve" onclick="markAsCompleted(${pair.pairId})">
             ✅ خلصته
@@ -159,7 +179,7 @@ function renderPairsGrid(state) {
         `;
       }
     } else if (pairState.status === 'completed') {
-      statusBadgeHTML = `<span class="juz-status-badge completed">💙 تم بحمد الله</span>`;
+      statusBadgeHTML   = `<span class="juz-status-badge completed">💙 تم بحمد الله</span>`;
       actionButtonsHTML = `
         <button class="btn-card btn-read" onclick="openReaderModal(${pair.pairId})">
           📖 اقرأ تاني
