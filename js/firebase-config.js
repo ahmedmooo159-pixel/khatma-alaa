@@ -8,7 +8,8 @@ export const FIREBASE_CONFIG = {
   storageBucket: "sad2a-ef9db.firebasestorage.app",
   messagingSenderId: "30455876228",
   appId: "1:30455876228:web:7c15fae804fd598399d0d1",
-  measurementId: "G-0EG1WRV075"
+  measurementId: "G-0EG1WRV075",
+  databaseURL: "https://sad2a-ef9db-default-rtdb.firebaseio.com"
 };
 
 // Supabase Alternative Config (Optional)
