@@ -1,0 +1,26 @@
+{
+  "name": "صدقة جارية - خاتمة القرآن الكريم (علاء عبد العزيز)",
+  "short_name": "خاتمة القرآن",
+  "description": "تطبيق صدقة جارية وختمة القرآن الكريم المجمعة على روح المغفور له بإذن الله علاء عبد العزيز",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#092921",
+  "theme_color": "#0d3b2e",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "./assets/images/memorial.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/images/memorial.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

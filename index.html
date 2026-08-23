@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>صدقة جارية - ختمة القرآن (علاء عبد العزيز)</title>
+  
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="صدقة جارية وختمة قرآن مجمعة للأهل والأحباب (30 جزء) على روح حبيبنا علاء عبد العزيز. ادخل احجز وردك واقرأ بدون نت.">
+  <meta name="keywords" content="صدقة جارية, ختمة القرآن, علاء عبد العزيز, قراءة القرآن, دعاء للميت">
+  <meta name="theme-color" content="#0d3b2e">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/jpeg" href="./assets/pic alaa/5789776860777485901_119.jpg">
+  <link rel="apple-touch-icon" href="./assets/pic alaa/5789776860777485901_119.jpg">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/quran.css">
+  <link rel="stylesheet" href="./css/components.css">
+
+  <!-- Firebase SDKs (Optional Realtime Sync) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <!-- Islamic Geometric Background Pattern -->
+  <div class="islamic-bg-pattern"></div>
+
+  <!-- App Sticky Header Bar -->
+  <header class="app-header">
+    <div class="nav-container">
+      <div class="brand-logo">
+        <img src="./assets/pic alaa/5789776860777485901_119.jpg" alt="علاء عبد العزيز" class="brand-icon portrait-img">
+        <div class="brand-text">
+          <h1>صدقة جارية</h1>
+          <p>ختمة القرآن • علاء عبد العزيز</p>
+        </div>
+      </div>
+      
+      <div class="nav-controls">
+        <span id="offline-badge" class="offline-badge">⚡ أوفلاين</span>
+        <span id="online-badge" class="online-badge">🌐 متصل</span>
+        <button id="pwa-install-btn" class="nav-btn nav-btn-gold" style="display: none;">
+          📲 نزل التطبيق
+        </button>
+        <button id="theme-toggle-btn" class="nav-btn">
+          ☀️
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero / Memorial Card Section -->
+  <section class="hero-section">
+    <div class="memorial-card">
+      <div class="memorial-header">
+        <div class="portrait-wrapper">
+          <img id="memorial-portrait-img" src="./assets/pic alaa/5789776860777485901_119.jpg" alt="المغفور له علاء عبد العزيز" class="portrait-img">
+          <button id="change-photo-btn" class="change-photo-btn">📷 تغيير</button>
+          <input type="file" id="photo-file-input" accept="image/*" style="display: none;">
+        </div>
+        <div>
+          <h2 class="memorial-title">صدقة جارية على روح حبيبنا</h2>
+          <h3 class="memorial-subtitle">علاء عبد العزيز</h3>
+          <p class="memorial-rahma">اللهم اغفر له وارحمه وأسكنه فسيح جناتك</p>
+        </div>
+      </div>
+
+      <!-- Photo Gallery Slideshow -->
+      <div class="photo-gallery">
+        <div class="gallery-track" id="gallery-track">
+          <div class="gallery-slide active">
+            <img src="./assets/pic alaa/5789776860777485901_119.jpg" alt="صورة 1" loading="lazy">
+          </div>
+          <div class="gallery-slide">
+            <img src="./assets/pic alaa/5789776860777485902_119.jpg" alt="صورة 2" loading="lazy">
+          </div>
+          <div class="gallery-slide">
+            <img src="./assets/pic alaa/5789776860777485903_119.jpg" alt="صورة 3" loading="lazy">
+          </div>
+          <div class="gallery-slide">
+            <img src="./assets/pic alaa/5789776860777485900_120.jpg" alt="صورة 4" loading="lazy">
+          </div>
+          <div class="gallery-slide">
+            <img src="./assets/pic alaa/5789776860777485899_120.jpg" alt="صورة 5" loading="lazy">
+          </div>
+          <div class="gallery-slide">
+            <img src="./assets/pic alaa/5785424920740302709_121.jpg" alt="صورة 6" loading="lazy">
+          </div>
+        </div>
+        <div class="gallery-dots" id="gallery-dots"></div>
+        <button class="gallery-arrow gallery-prev" id="gallery-prev">❯</button>
+        <button class="gallery-arrow gallery-next" id="gallery-next">❮</button>
+      </div>
+
+      <div class="memorial-quote">
+        ﴿ الَّذِينَ إِذَا أَصَابَتْهُم مُّصِيبَةٌ قَالُوا إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ ﴾
+      </div>
+
+      <p class="memorial-desc">
+        متجمعين هنا إحنا الـ 15 عشان نقرأ القرآن الكريم كاملاً، كل واحد مننا له ورد (جزئين). ربنا يجعل ثواب القراءة دي نور في قبره ويصبر قلوبنا على فراقه.
+      </p>
+
+      <div class="memorial-actions">
+        <button class="nav-btn nav-btn-gold" onclick="shareDuaText('عايزين نكمل الختمة على روح حبيبنا علاء عبد العزيز، ادخل احجز وردك من هنا')">
+          🔗 ابعت الرابط للحبايب
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Tabbed Content Area -->
+  <main class="main-content">
+    
+    <!-- Section Navigation Tabs -->
+    <nav class="section-nav" id="section-nav">
+      <button class="tab-btn active" data-tab="tab-khatmah">
+        <span class="tab-icon">📖</span>
+        <span class="tab-label">الختمة (١٥ كارت)</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-duas">
+        <span class="tab-icon">🤲</span>
+        <span class="tab-label">أدعية لحبيبنا</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-info">
+        <span class="tab-icon">ℹ️</span>
+        <span class="tab-label">هنقرأ إزاي؟</span>
+      </button>
+    </nav>
+
+    <!-- Tab 1: Quran Khatmah Grid & Progress -->
+    <div id="tab-khatmah" class="tab-content active">
+      <div class="section-header-center" style="margin-bottom: 1rem;">
+         <div class="portrait-wrapper" style="width: 60px; height: 60px; margin: 0 auto 0.5rem; padding: 2px;">
+            <img src="./assets/pic alaa/5789776860777485901_119.jpg" alt="علاء" class="portrait-img">
+         </div>
+      </div>
+      <!-- Progress Bar Card -->
+      <div class="progress-card">
+        <div class="progress-header">
+          <div class="progress-title">
+            <span>✨ وصلنا لفين في الختمة؟</span>
+          </div>
+          <div class="progress-stats-pills">
+            <span id="stat-available" class="stat-pill stat-available">متاح: 15</span>
+            <span id="stat-progress" class="stat-pill stat-progress">شغالين: 0</span>
+            <span id="stat-completed" class="stat-pill stat-completed">خلص: 0</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div id="progress-text" class="progress-text">بنحمل الحالة...</div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="filter-bar">
+        <div class="filter-pills">
+          <button class="filter-pill-btn active" data-filter="all">كله</button>
+          <button class="filter-pill-btn" data-filter="available">🟢 فاضي</button>
+          <button class="filter-pill-btn" data-filter="reserved">📖 شغالين فيه</button>
+          <button class="filter-pill-btn" data-filter="completed">💙 خلص</button>
+          <button class="filter-pill-btn" data-filter="my">👤 الأوراد بتاعتي</button>
+        </div>
+      </div>
+
+      <!-- 15 Pairs Container -->
+      <div id="juz-grid-container" class="juz-grid">
+        <!-- Rendered via JavaScript dynamically -->
+      </div>
+    </div>
+
+    <!-- Tab 2: Supplications & Duas -->
+    <div id="tab-duas" class="tab-content">
+      <div class="section-header-center">
+        <div class="portrait-wrapper" style="width: 60px; height: 60px; margin: 0 auto 0.5rem; padding: 2px;">
+            <img src="./assets/pic alaa/5789776860777485901_119.jpg" alt="علاء" class="portrait-img">
+        </div>
+        <h2 class="section-title-gold">
+          أدعية من القلب لعلاء ربنا يرحمه
+        </h2>
+        <p class="section-subtitle">
+          دوس على (أمّن على الدعاء) عشان تدعي معانا وتاخد الأجر
+        </p>
+      </div>
+
+      <div id="dua-grid-container" class="dua-grid">
+        <!-- Rendered via JavaScript dynamically -->
+      </div>
+    </div>
+
+    <!-- Tab 3: Instructions -->
+    <div id="tab-info" class="tab-content">
+      <div class="info-card">
+        <div class="section-header-center">
+            <div class="portrait-wrapper" style="width: 60px; height: 60px; margin: 0 auto 0.5rem; padding: 2px;">
+                <img src="./assets/pic alaa/5789776860777485901_119.jpg" alt="علاء" class="portrait-img">
+            </div>
+        </div>
+        <h2 class="info-title">
+          💡 هنمشي في الختمة دي إزاي؟
+        </h2>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-icon">🤝</span>
+            <div>
+              <strong>إحنا ١٥ واحد:</strong>
+              <p>عشان نسهل على بعض، قسمنا الـ ٣٠ جزء على ١٥ كارت.. يعني كل كارت فيه جزئين مع بعض تخلصهم براحتك.</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🔒</span>
+            <div>
+              <strong>احجز الورد بتاعك:</strong>
+              <p>أول ما تكتب اسمك وتحجز كارت، هيتقفل باسمك على موبايلك عشان محدش يختاره تاني بالغط، وربنا يتقبل منك.</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">📖</span>
+            <div>
+              <strong>المصحف موجود جوه:</strong>
+              <p>لما تيجي تقرأ، دوس على (اقرأ)، وهنحملك الآيات تقرأها من الموقع، ولو النت فصل وأنت بتقرأ هتلاقي الآيات محفوظة وتقدر تكمل عادي جداً أوفلاين!</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-icon">🔄</span>
+            <div>
+              <strong>كلنا شايفين بعض:</strong>
+              <p>الموقع بيحدث نفسه على طول، فكلنا هنبقى عارفين مين خلص إيه وفاضل قد إيه لحد ما نختم بإذن الله.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-quran-verse">
+        ﴿ وَمَا تُقَدِّمُوا لِأَنفُسِكُم مِّنْ خَيْرٍ تَجِدُوهُ عِندَ اللَّهِ ﴾
+      </div>
+      <p>صدقة جارية على روح حبيبنا علاء عبد العزيز</p>
+      <p style="font-size: 0.78rem; opacity: 0.6;">ربنا يغفر له ويرحمه ويجمعنا بيه في الفردوس الأعلى</p>
+    </div>
+  </footer>
+
+  <!-- Modal: Reserve Juz -->
+  <div id="reservation-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-juz-title" class="modal-title">حجز الورد</h3>
+        <button id="close-reserve-modal" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="reservation-form">
+        <div class="form-group">
+          <label class="form-label" for="reader-name-input">اكتب اسمك يا غالي:</label>
+          <input type="text" id="reader-name-input" class="form-input" placeholder="مثال: أحمد عبد العزيز" required>
+        </div>
+        <p class="modal-note">
+          🔒 الكارت ده هيتحجز باسمك ومحدش هيقدر يختاره غيرك.
+        </p>
+        <button type="submit" class="btn-submit-full">
+          ✅ توكلت على الله (تأكيد الحجز)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Quran Reader Full Screen -->
+  <div id="reader-modal" class="reader-modal">
+    <div class="reader-header">
+      <div class="reader-title-area">
+        <button id="close-reader-btn" class="nav-btn">
+          ✕ رجوع
+        </button>
+        <h2 id="reader-juz-title">الجزء</h2>
+      </div>
+
+      <div class="reader-toolbar">
+        <button id="font-minus-btn" class="reader-tool-btn" title="تصغير الخط">
+          A-
+        </button>
+        <button id="font-plus-btn" class="reader-tool-btn" title="تكبير الخط">
+          A+
+        </button>
+        <button id="reader-mark-done-btn" class="nav-btn nav-btn-gold" style="display: none;">
+          ✅ خلصت الورد
+        </button>
+      </div>
+    </div>
+
+    <div class="reader-body">
+      <div id="quran-text-container" class="quran-text-container">
+        <!-- Quran Text Rendered Here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Module Entrypoint Script -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

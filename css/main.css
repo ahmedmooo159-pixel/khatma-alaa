@@ -1,0 +1,811 @@
+/* Main Stylesheet - Islamic Aesthetic Design System - Full Mobile Responsive */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&family=Reem+Kufi:wght@500;700&display=swap');
+
+:root {
+  /* Color Palette - Emerald Green, Royal Gold, & Parchment */
+  --bg-primary: #09261e;
+  --bg-secondary: #0d3b2e;
+  --bg-card: #124939;
+  --bg-card-hover: #175a47;
+  --bg-glass: rgba(13, 59, 46, 0.75);
+  
+  --primary-gold: #e5c158;
+  --primary-gold-hover: #f3d478;
+  --gold-glow: rgba(229, 193, 88, 0.25);
+  --gold-border: rgba(229, 193, 88, 0.4);
+  
+  --text-primary: #fbf8f3;
+  --text-secondary: #cde3db;
+  --text-muted: #8bb3a5;
+  --text-gold: #f0d688;
+  
+  --status-available: #10b981;
+  --status-available-bg: rgba(16, 185, 129, 0.15);
+  --status-progress: #f59e0b;
+  --status-progress-bg: rgba(245, 158, 11, 0.15);
+  --status-completed: #3b82f6;
+  --status-completed-bg: rgba(59, 130, 246, 0.15);
+
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-gold: 0 0 20px rgba(229, 193, 88, 0.2);
+
+  --font-arabic-title: 'Reem Kufi', 'Amiri', serif;
+  --font-arabic-quran: 'Amiri', serif;
+  --font-arabic-ui: 'Tajawal', 'Cairo', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Safe area insets for notched phones */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Light Theme Variables Toggle */
+[data-theme="light"] {
+  --bg-primary: #f4efe6;
+  --bg-secondary: #eae3d2;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9f7f2;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --primary-gold: #b38914;
+  --primary-gold-hover: #96720d;
+  --gold-glow: rgba(179, 137, 20, 0.15);
+  --gold-border: rgba(179, 137, 20, 0.3);
+  --text-primary: #1c2b26;
+  --text-secondary: #3d544c;
+  --text-muted: #6b857d;
+  --text-gold: #8e6c0c;
+  --status-available-bg: rgba(16, 185, 129, 0.1);
+  --status-progress-bg: rgba(245, 158, 11, 0.1);
+  --status-completed-bg: rgba(59, 130, 246, 0.1);
+}
+
+/* Reset & Global Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-arabic-ui);
+  direction: rtl;
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(229, 193, 88, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(13, 59, 46, 0.5) 0%, transparent 50%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Islamic Geometric Background Accent Overlay */
+.islamic-bg-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23e5c158' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 0h80v80H0V0zm40 40M20 20l20 20-20 20L0 40l20-20zm40 0l20 20-20 20-20-20 20-20zM40 0l20 20L40 40 20 20 40 0zm0 40l20 20L40 80 20 60 40 40z'/%3E%3C/g%3E%3C/svg%3E");
+  z-index: -1;
+}
+
+/* ============================
+   Header & Navigation Bar
+   ============================ */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gold-border);
+  padding-top: var(--safe-top);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-gold);
+  object-fit: cover;
+  box-shadow: var(--shadow-gold);
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.brand-text h1 {
+  font-family: var(--font-arabic-title);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-gold);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-text p {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-border);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.nav-btn:hover, .nav-btn:active {
+  background: var(--bg-card-hover);
+  border-color: var(--primary-gold);
+}
+
+.nav-btn-gold {
+  background: linear-gradient(135deg, #d4af37, #e5c158);
+  color: #09261e;
+  border: none;
+  font-weight: 700;
+}
+
+.nav-btn-gold:hover, .nav-btn-gold:active {
+  background: linear-gradient(135deg, #e5c158, #f3d478);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Offline/Online Badges */
+.offline-badge {
+  display: none;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.offline-badge.visible {
+  display: inline-flex;
+}
+
+.online-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* ============================
+   Hero & Memorial Section
+   ============================ */
+.hero-section {
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.memorial-card {
+  max-width: 850px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-card));
+  border: 1.5px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem;
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+  position: relative;
+  overflow: hidden;
+}
+
+.memorial-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+}
+
+.memorial-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.portrait-wrapper {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  padding: 5px;
+  background: linear-gradient(135deg, var(--primary-gold), #8e6c0c, var(--primary-gold));
+  box-shadow: var(--shadow-gold);
+  flex-shrink: 0;
+}
+
+.portrait-wrapper .portrait-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--bg-secondary);
+}
+
+.change-photo-btn {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-border);
+  color: var(--primary-gold);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.memorial-title {
+  font-family: var(--font-arabic-title);
+  font-size: 1.5rem;
+  color: var(--primary-gold);
+  margin-bottom: 0.15rem;
+  line-height: 1.4;
+}
+
+.memorial-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.memorial-rahma {
+  font-family: var(--font-arabic-quran);
+  font-size: 1rem;
+  color: var(--text-gold);
+  margin-top: 0.3rem;
+}
+
+/* Photo Gallery Slideshow */
+.photo-gallery {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 1.25rem auto;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1.5px solid var(--gold-border);
+  box-shadow: var(--shadow-md);
+  aspect-ratio: 4/3;
+  background: var(--bg-primary);
+}
+
+.gallery-track {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.gallery-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.gallery-slide.active {
+  opacity: 1;
+}
+
+.gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+}
+
+.gallery-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gallery-dot.active {
+  background: var(--primary-gold);
+  border-color: var(--primary-gold);
+  transform: scale(1.2);
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.65rem;
+  border-radius: 50%;
+  font-size: 1rem;
+  z-index: 5;
+  transition: background 0.2s;
+}
+
+.gallery-arrow:hover {
+  background: rgba(229, 193, 88, 0.7);
+}
+
+.gallery-prev { right: 8px; }
+.gallery-next { left: 8px; }
+
+.memorial-quote {
+  font-family: var(--font-arabic-quran);
+  font-size: 1.15rem;
+  color: var(--text-gold);
+  margin: 1rem 0;
+  padding: 0.65rem 0.85rem;
+  background: rgba(229, 193, 88, 0.08);
+  border-right: 3px solid var(--primary-gold);
+  border-left: 3px solid var(--primary-gold);
+  border-radius: var(--radius-sm);
+  line-height: 1.9;
+  text-align: center;
+}
+
+.memorial-desc {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.memorial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* ============================
+   Tabs & Section Layout
+   ============================ */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem 2rem;
+  width: 100%;
+  flex: 1;
+}
+
+.section-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(229, 193, 88, 0.2);
+  padding-bottom: 0.6rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.section-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  padding: 0.6rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-btn.active {
+  background: var(--bg-card);
+  color: var(--primary-gold);
+  border: 1px solid var(--gold-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section headers */
+.section-header-center {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-title-gold {
+  font-family: var(--font-arabic-title);
+  color: var(--primary-gold);
+  font-size: 1.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+/* Info Tab Items */
+.info-card {
+  max-width: 900px;
+  margin: 0 auto;
+  background: linear-gradient(145deg, var(--bg-secondary), var(--bg-card));
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.info-title {
+  font-family: var(--font-arabic-title);
+  color: var(--primary-gold);
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(229, 193, 88, 0.1);
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.info-item strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+.info-item p {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ============================
+   Footer Styling
+   ============================ */
+.app-footer {
+  margin-top: auto;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--gold-border);
+  padding: 1.5rem 1rem;
+  padding-bottom: calc(1.5rem + var(--safe-bottom));
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-quran-verse {
+  font-family: var(--font-arabic-quran);
+  font-size: 1.05rem;
+  color: var(--primary-gold);
+}
+
+/* ============================
+   Responsive Breakpoints
+   ============================ */
+/* Tablets */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0.55rem 0.75rem;
+  }
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  .brand-text h1 {
+    font-size: 0.95rem;
+  }
+  .brand-text p {
+    font-size: 0.68rem;
+  }
+  .hero-section {
+    padding: 1rem 0.75rem;
+  }
+  .memorial-card {
+    padding: 1.5rem 1rem;
+    border-radius: var(--radius-md);
+  }
+  .memorial-title {
+    font-size: 1.25rem;
+  }
+  .memorial-subtitle {
+    font-size: 1.1rem;
+  }
+  .memorial-quote {
+    font-size: 1rem;
+    padding: 0.5rem 0.65rem;
+  }
+  .portrait-wrapper {
+    width: 110px;
+    height: 110px;
+  }
+  .photo-gallery {
+    max-width: 340px;
+  }
+  .tab-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  .main-content {
+    padding: 0.5rem 0.75rem 1.5rem;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.5rem 0.6rem;
+  }
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+  .brand-text h1 {
+    font-size: 0.85rem;
+  }
+  .brand-text p {
+    display: none;
+  }
+  .nav-btn {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.78rem;
+  }
+  .hero-section {
+    padding: 0.75rem 0.5rem;
+  }
+  .memorial-card {
+    padding: 1.25rem 0.75rem;
+    border-radius: 14px;
+  }
+  .memorial-title {
+    font-size: 1.1rem;
+  }
+  .memorial-subtitle {
+    font-size: 1rem;
+  }
+  .memorial-rahma {
+    font-size: 0.88rem;
+  }
+  .memorial-quote {
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  .memorial-desc {
+    font-size: 0.82rem;
+  }
+  .portrait-wrapper {
+    width: 100px;
+    height: 100px;
+    padding: 4px;
+  }
+  .photo-gallery {
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+  }
+  .gallery-arrow {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  .tab-btn {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.8rem;
+    gap: 0.25rem;
+  }
+  .tab-icon {
+    font-size: 1.1rem;
+  }
+  .tab-label {
+    font-size: 0.75rem;
+  }
+  .section-nav {
+    gap: 0.25rem;
+    margin-bottom: 0.85rem;
+  }
+  .main-content {
+    padding: 0.4rem 0.5rem 1.25rem;
+  }
+  .footer-quran-verse {
+    font-size: 0.92rem;
+  }
+  .info-item {
+    padding: 0.75rem;
+    gap: 0.6rem;
+  }
+  .info-icon {
+    font-size: 1.2rem;
+  }
+  .info-item strong {
+    font-size: 0.88rem;
+  }
+  .info-item p {
+    font-size: 0.82rem;
+  }
+}
+
+/* Very small screens (SE, 5s etc.) */
+@media (max-width: 360px) {
+  .brand-text h1 {
+    font-size: 0.78rem;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+  .portrait-wrapper {
+    width: 85px;
+    height: 85px;
+  }
+  .memorial-title {
+    font-size: 0.95rem;
+  }
+  .tab-label {
+    display: none;
+  }
+  .tab-icon {
+    font-size: 1.3rem;
+  }
+  .tab-btn {
+    padding: 0.5rem 0.65rem;
+  }
+}
