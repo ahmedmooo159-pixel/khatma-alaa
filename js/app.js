@@ -1,5 +1,4 @@
-// Main Application Driver & UI Controller
-import { KHATMAH_PAIRS, fetchAndCacheJuz, isJuzCached, getCachedJuz } from './quran-data.js';
+import { KHATMAH_PAIRS, fetchAndCacheJuz, isJuzCached, getCachedJuz, pairCacheStatus } from './quran-data.js';
 import { khatmahManager, getDeviceId, getSavedUserName } from './khatmah-manager.js';
 import { DUA_COLLECTION } from './dua-data.js';
 import { initPWA } from './pwa-installer.js';
@@ -13,10 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigationTabs();
   initMemorialPhotoHandler();
   initThemeToggle();
+  initNetworkBadges();
   renderDuaSection();
   initGallery();
 
-  // Subscribe to Khatmah State Changes
   khatmahManager.subscribe((state) => {
     renderProgressStats();
     renderPairsGrid(state);
@@ -26,6 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
   initReaderModal();
   initFilterButtons();
 });
+
+// Network status badges
+function initNetworkBadges() {
+  const offlineBadge = document.getElementById('offline-badge');
+  const onlineBadge  = document.getElementById('online-badge');
+
+  function update() {
+    if (navigator.onLine) {
+      offlineBadge.style.display = 'none';
+      onlineBadge.style.display  = 'inline-flex';
+    } else {
+      offlineBadge.style.display = 'inline-flex';
+      onlineBadge.style.display  = 'none';
+    }
+  }
+  update();
+  window.addEventListener('online',  update);
+  window.addEventListener('offline', update);
+}
+
 
 // Toast notification helper
 export function showToast(message, type = 'success') {
@@ -82,7 +101,7 @@ function renderProgressStats() {
   if (completedPill) completedPill.textContent = `خلص: ${stats.completed}`;
 }
 
-// Render 15 Pairs Grid
+// Render 17 Pairs Grid
 function renderPairsGrid(state) {
   const container = document.getElementById('juz-grid-container');
   if (!container) return;
@@ -93,6 +112,8 @@ function renderPairsGrid(state) {
   KHATMAH_PAIRS.forEach(pair => {
     const pairState = state[pair.pairId] || { status: 'available' };
     const isMine = pairState.deviceToken === myDeviceId;
+    const cacheInfo = pairCacheStatus(pair.pairId);
+    const isFullyCached = cacheInfo.cached === cacheInfo.total;
 
     // Apply Filter
     if (activeFilter === 'available' && pairState.status !== 'available') return;
@@ -105,6 +126,12 @@ function renderPairsGrid(state) {
 
     let statusBadgeHTML = '';
     let actionButtonsHTML = '';
+    // Offline indicator
+    const offlineBadge = isMine
+      ? `<span class="offline-pill" title="${isFullyCached ? 'محفوظ أوفلاين' : 'لسه بيتحمل'}" style="font-size:0.7rem;color:${isFullyCached ? '#10b981' : '#f59e0b'}">
+           ${isFullyCached ? '📥 محفوظ' : '⏳ بيتحمل'}
+         </span>`
+      : '';
 
     if (pairState.status === 'available') {
       statusBadgeHTML = `<span class="juz-status-badge available">🟢 متاح</span>`;
@@ -126,7 +153,7 @@ function renderPairsGrid(state) {
         `;
       } else {
         actionButtonsHTML = `
-          <button class="btn-card btn-locked" disabled title="الورد ده محجوز">
+          <button class="btn-card btn-locked" disabled>
             🔒 محجوز
           </button>
         `;
@@ -147,7 +174,8 @@ function renderPairsGrid(state) {
       </div>
       <div class="juz-info">
         <h3 class="juz-title">${pair.label}</h3>
-        ${pairState.readerName ? `<p class="juz-reader-name">👤 القارئ: <strong>${pairState.readerName}</strong> ${isMine ? '(أنت)' : ''}</p>` : ''}
+        ${pairState.readerName ? `<p class="juz-reader-name">👤 ${pairState.readerName} ${isMine ? '<strong>(أنت)</strong>' : ''}</p>` : ''}
+        ${offlineBadge}
       </div>
       <div class="juz-actions">
         ${actionButtonsHTML}
@@ -157,6 +185,7 @@ function renderPairsGrid(state) {
     container.appendChild(card);
   });
 }
+
 
 // Filter Controls Setup
 function initFilterButtons() {
