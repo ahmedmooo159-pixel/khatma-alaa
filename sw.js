@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sad2a-quran-khatmah-v1';
+const CACHE_NAME = 'sad2a-khatmah-cache-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
