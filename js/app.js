@@ -1,7 +1,7 @@
 import { KHATMAH_PAIRS, fetchAndCacheJuz, isJuzCached, getCachedJuz, pairCacheStatus } from './quran-data.js';
 import { khatmahManager, getDeviceId, getSavedUserName } from './khatmah-manager.js';
 import { DUA_COLLECTION } from './dua-data.js';
-import { initPWA } from './pwa-installer.js';
+import { initPWA, isPWAInstalled, promptInstall, deferredPrompt } from './pwa-installer.js';
 
 let activeFilter = 'all';
 let currentReadingPairId = null;
@@ -227,16 +227,50 @@ function initReservationModal() {
   const closeBtn = document.getElementById('close-reserve-modal');
   const nameInput = document.getElementById('reader-name-input');
 
-  window.openReservationModal = (pairId) => {
-    currentReadingPairId = pairId;
-    const pair = KHATMAH_PAIRS.find(p => p.pairId === pairId);
-    document.getElementById('modal-juz-title').textContent = `حجز ${pair.label}`;
-    nameInput.value = getSavedUserName();
-    modal.classList.add('active');
-    nameInput.focus();
-  };
+// --- Modals ---
+window.openReservationModal = (pairId) => {
+  // Enforce PWA Installation first!
+  if (!isPWAInstalled()) {
+    openInstallModal();
+    return;
+  }
 
-  closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
+  currentReadingPairId = pairId;
+  const pair = KHATMAH_PAIRS.find(p => p.pairId === pairId);
+  if (!pair) return;
+
+  document.getElementById('modal-juz-title').textContent = `حجز ${pair.label}`;
+  
+  // Suggest previously saved name
+  const savedName = getSavedUserName();
+  if (savedName) {
+    document.getElementById('reader-name-input').value = savedName;
+  }
+
+  document.getElementById('reservation-modal').classList.add('active');
+};
+
+// Install Required Modal logic
+window.openInstallModal = () => {
+  const modal = document.getElementById('install-required-modal');
+  const btn = document.getElementById('modal-install-btn');
+  if (deferredPrompt && btn) {
+    btn.style.display = 'block';
+  } else if (btn) {
+    btn.style.display = 'none';
+  }
+  if (modal) modal.classList.add('active');
+};
+
+window.closeInstallModal = () => {
+  const modal = document.getElementById('install-required-modal');
+  if (modal) modal.classList.remove('active');
+};
+
+window.triggerAppInstall = () => {
+  promptInstall();
+  closeInstallModal();
+};
   modal?.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.remove('active');
   });

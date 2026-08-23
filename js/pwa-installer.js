@@ -1,5 +1,25 @@
 // PWA Register & Network Status Handler
 
+export let deferredPrompt = null;
+
+export function isPWAInstalled() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  const isIOSStandalone = window.navigator.standalone === true;
+  return isStandalone || isIOSStandalone;
+}
+
+export function promptInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted PWA installation');
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
 export function initPWA() {
   const offlineBadge = document.getElementById('offline-badge');
   const onlineBadge = document.getElementById('online-badge');
@@ -32,7 +52,6 @@ export function initPWA() {
   }
 
   // Handle Install Prompt (Optional PWA banner)
-  let deferredPrompt;
   const installBtn = document.getElementById('pwa-install-btn');
 
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -41,15 +60,10 @@ export function initPWA() {
     if (installBtn) {
       installBtn.style.display = 'inline-flex';
       installBtn.addEventListener('click', () => {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted PWA installation');
-          }
-          deferredPrompt = null;
-          installBtn.style.display = 'none';
-        });
+        promptInstall();
+        installBtn.style.display = 'none';
       });
     }
   });
 }
+
