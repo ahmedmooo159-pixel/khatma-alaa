@@ -591,3 +591,46 @@ export const QURAN_SURAH_LIST = [
     "name": "سُورَةُ النَّاسِ"
   }
 ];
+
+const SURAH_CACHE_PREFIX = 'sad2a_quran_surah_v2_';
+
+export async function fetchAndCacheSurah(surahId) {
+  const cacheKey = SURAH_CACHE_PREFIX + surahId;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try { return JSON.parse(cached); } catch { localStorage.removeItem(cacheKey); }
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.alquran.cloud/v1/surah/${surahId}/quran-uthmani`,
+      { signal: AbortSignal.timeout(15000) }
+    );
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = await res.json();
+
+    if (json.status === 'OK' && json.data && json.data.ayahs) {
+      const s = json.data;
+      const surahData = {
+        number: s.number,
+        name: s.name,
+        verses: s.ayahs.map(ayah => ({
+          number: ayah.numberInSurah,
+          text: ayah.text
+        }))
+      };
+      const result = { surahId, surahs: [surahData] };
+      try { localStorage.setItem(cacheKey, JSON.stringify(result)); } catch { /* ignore quota */ }
+      return result;
+    }
+  } catch (err) {
+    console.warn('[Quran] failed to load surah ' + surahId, err.message);
+  }
+  return null;
+}
+
+export function getCachedSurah(surahId) {
+  const raw = localStorage.getItem(SURAH_CACHE_PREFIX + surahId);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}

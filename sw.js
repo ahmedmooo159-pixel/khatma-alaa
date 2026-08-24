@@ -1,7 +1,7 @@
 // Service Worker - Cache First for App Shell, Network First for API
-// Version 9 - Make install button always visible
+// Version 10 - Fix missing exports in quran-data.js
 
-const CACHE_NAME    = 'sad2a-khatmah-v9';
+const CACHE_NAME    = 'sad2a-khatmah-v10';
 const APP_SHELL     = [
   './',
   './index.html',
