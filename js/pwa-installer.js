@@ -54,16 +54,24 @@ export function initPWA() {
   // Handle Install Prompt (Optional PWA banner)
   const installBtn = document.getElementById('pwa-install-btn');
 
+  if (installBtn) {
+    if (isPWAInstalled()) {
+      installBtn.style.display = 'none';
+    } else {
+      installBtn.style.display = 'inline-flex';
+      installBtn.addEventListener('click', () => {
+        if (typeof window.openInstallModal === 'function') {
+          window.openInstallModal();
+        } else {
+          promptInstall();
+        }
+      });
+    }
+  }
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn) {
-      installBtn.style.display = 'inline-flex';
-      installBtn.addEventListener('click', () => {
-        promptInstall();
-        installBtn.style.display = 'none';
-      });
-    }
   });
 }
 

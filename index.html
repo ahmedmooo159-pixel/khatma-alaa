@@ -43,7 +43,7 @@
       <div class="nav-controls">
         <span id="offline-badge" class="offline-badge">⚡ أوفلاين</span>
         <span id="online-badge" class="online-badge">🌐 متصل</span>
-        <button id="pwa-install-btn" class="nav-btn nav-btn-gold" style="display: none;">
+        <button id="pwa-install-btn" class="nav-btn nav-btn-gold">
           📲 نزل التطبيق
         </button>
         <button id="theme-toggle-btn" class="nav-btn">
@@ -121,6 +121,10 @@
         <span class="tab-icon">📖</span>
         <span class="tab-label">الختمة (١٧ كارت)</span>
       </button>
+      <button class="tab-btn" data-tab="tab-fullquran">
+        <span class="tab-icon">🕋</span>
+        <span class="tab-label">المصحف كاملاً</span>
+      </button>
       <button class="tab-btn" data-tab="tab-duas">
         <span class="tab-icon">🤲</span>
         <span class="tab-label">أدعية لحبيبنا</span>
@@ -150,10 +154,21 @@
             <span id="stat-completed" class="stat-pill stat-completed">خلص: 0</span>
           </div>
         </div>
+
+        <div id="khatmah-cycle-badge" style="display:none; text-align:center; background: var(--primary-gold); color: white; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem; font-weight: bold;">
+          تم إنجاز <span id="khatmah-cycle-count">0</span> ختمات كاملة 🤍
+        </div>
+
         <div class="progress-bar-container">
           <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
         </div>
         <div id="progress-text" class="progress-text">بنحمل الحالة...</div>
+        
+        <div id="restart-khatmah-container" style="display:none; text-align: center; margin-top: 1rem;">
+          <button id="restart-khatmah-btn" class="nav-btn nav-btn-gold" style="width: 100%; padding: 0.75rem;">
+             بدء ختمة جديدة
+          </button>
+        </div>
       </div>
 
       <!-- Filter Controls -->
@@ -189,6 +204,27 @@
 
       <div id="dua-grid-container" class="dua-grid">
         <!-- Rendered via JavaScript dynamically -->
+      </div>
+    </div>
+
+    <!-- Tab Full Quran -->
+    <div id="tab-fullquran" class="tab-content">
+      <div class="info-card">
+        <h2 class="info-title" style="text-align: center;">المصحف الشريف</h2>
+        <p style="text-align: center; margin-bottom: 1.5rem; font-size: 0.9rem;">
+          قراءة حرة لا تؤثر على حجوزات الختمة المشتركة. يمكنك تحميل السور والأجزاء للقراءة بدون إنترنت.
+        </p>
+        
+        <div class="filter-bar" style="justify-content: center;">
+          <div class="filter-pills">
+            <button class="filter-pill-btn active" id="btn-show-surahs">السور (١١٤)</button>
+            <button class="filter-pill-btn" id="btn-show-juzs">الأجزاء (٣٠)</button>
+          </div>
+        </div>
+
+        <div id="fullquran-grid-container" class="juz-grid" style="margin-top: 1.5rem;">
+          <!-- Rendered via JS -->
+        </div>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import { KHATMAH_PAIRS, fetchAndCacheJuz, isJuzCached, getCachedJuz, pairCacheStatus } from './quran-data.js';
+import { KHATMAH_PAIRS, QURAN_JUZ_LIST, QURAN_SURAH_LIST, fetchAndCacheSurah, getCachedSurah, fetchAndCacheJuz, isJuzCached, getCachedJuz, pairCacheStatus } from './quran-data.js';
 import { khatmahManager, getDeviceId, getSavedUserName } from './khatmah-manager.js';
 import { DUA_COLLECTION } from './dua-data.js';
 import { initPWA, isPWAInstalled, promptInstall, deferredPrompt } from './pwa-installer.js';
@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initReservationModal();
   initReaderModal();
   initFilterButtons();
+  initRestartKhatmahButton();
+  renderFullQuranSection();
 });
 
 // Network status badges
@@ -127,13 +129,47 @@ function renderProgressStats() {
   const availablePill = document.getElementById('stat-available');
   const progressPill = document.getElementById('stat-progress');
   const completedPill = document.getElementById('stat-completed');
+  
+  const cycleBadge = document.getElementById('khatmah-cycle-badge');
+  const cycleCountText = document.getElementById('khatmah-cycle-count');
+  const restartContainer = document.getElementById('restart-khatmah-container');
 
   if (fill) fill.style.width = `${stats.percentage}%`;
-  if (text) text.textContent = `تم قراءة ${stats.completed} من أصل 15 ورد (${stats.percentage}%)`;
+  if (text) text.textContent = `تم قراءة ${stats.completed} من أصل 17 ورد (${stats.percentage}%)`;
 
   if (availablePill) availablePill.textContent = `متاح: ${stats.available}`;
   if (progressPill) progressPill.textContent = `شغالين فيه: ${stats.reserved}`;
   if (completedPill) completedPill.textContent = `خلص: ${stats.completed}`;
+
+  if (cycleBadge && stats.cycleCount > 0) {
+    cycleBadge.style.display = 'block';
+    if (cycleCountText) cycleCountText.textContent = stats.cycleCount;
+  }
+
+  if (restartContainer) {
+    if (stats.completed === stats.total) {
+      restartContainer.style.display = 'block';
+    } else {
+      restartContainer.style.display = 'none';
+    }
+  }
+}
+
+function initRestartKhatmahButton() {
+  const btn = document.getElementById('restart-khatmah-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const confirmRestart = confirm('هل أنت متأكد إنك عايز تصفر الختمة وتبدأ ختمة جديدة؟');
+      if (confirmRestart) {
+        const res = khatmahManager.restartKhatmah();
+        if (res.success) {
+          showToast(res.message, 'success');
+        } else {
+          showToast(res.message, 'error');
+        }
+      }
+    });
+  }
 }
 
 // Render 17 Pairs Grid
@@ -592,4 +628,124 @@ function initGallery() {
     setInterval(() => {
         goToSlide(currentIndex + 1);
     }, 4000);
+}
+
+// ── Full Quran (Surahs / Juzs) ──
+async function renderSurahText(surahId, container) {
+  let surahData = getCachedSurah(surahId);
+  if (!surahData) {
+     container.innerHTML += `<div class="bismillah-header" id="loading-s-${surahId}">جاري تحميل السورة من النت...</div>`;
+     surahData = await fetchAndCacheSurah(surahId);
+     const loadingEl = document.getElementById(`loading-s-${surahId}`);
+     if(loadingEl) loadingEl.remove();
+  }
+
+  if (surahData && surahData.surahs) {
+    let html = '';
+    surahData.surahs.forEach(surah => {
+      html += `<div class="surah-header-banner">✨ سورة ${surah.name} ✨</div>`;
+      html += `<p style="margin-bottom: 1.5rem;">`;
+      if (surah.number !== 1 && surah.number !== 9) {
+          html += `<div style="text-align:center; font-size:1.4rem; margin-bottom:1rem; color: var(--primary-gold);">بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ</div>`;
+      }
+      surah.verses.forEach(v => {
+        let text = v.text;
+        if(surah.number !== 1 && v.number === 1 && text.startsWith("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ")) {
+            text = text.replace("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ ", "");
+        }
+        html += `<span>${text}</span> <span class="ayah-number">${v.number}</span> `;
+      });
+      html += `</p>`;
+    });
+    container.innerHTML += html;
+  } else {
+    container.innerHTML += `<div class="bismillah-header">حصلت مشكلة في تحميل السورة دي. اتأكد من النت وجرب تاني.</div>`;
+  }
+}
+
+window.openFreeReaderModal = async (type, id, title) => {
+  const modal = document.getElementById('reader-modal');
+  const markDoneBtn = document.getElementById('reader-mark-done-btn');
+  const bodyContainer = document.getElementById('quran-text-container');
+  
+  document.getElementById('reader-juz-title').textContent = title;
+  bodyContainer.style.fontSize = `${currentFontSize}rem`;
+  bodyContainer.innerHTML = ''; 
+
+  if (markDoneBtn) markDoneBtn.style.display = 'none'; 
+  modal.classList.add('active');
+
+  if (type === 'juz') {
+    await renderJuzText(id, bodyContainer);
+  } else {
+    await renderSurahText(id, bodyContainer);
+  }
+};
+
+function renderFullQuranSection() {
+  const container = document.getElementById('fullquran-grid-container');
+  if (!container) return;
+
+  const btnSurahs = document.getElementById('btn-show-surahs');
+  const btnJuzs = document.getElementById('btn-show-juzs');
+  let currentView = 'surahs';
+
+  function renderGrid() {
+    container.innerHTML = '';
+    if (currentView === 'surahs') {
+      QURAN_SURAH_LIST.forEach(surah => {
+        const card = document.createElement('div');
+        card.className = 'juz-card';
+        card.innerHTML = `
+          <div class="juz-header">
+            <div class="juz-badge-number">${surah.id}</div>
+          </div>
+          <div class="juz-info">
+            <h3 class="juz-title">${surah.name}</h3>
+          </div>
+          <div class="juz-actions">
+            <button class="btn-card btn-read" onclick="openFreeReaderModal('surah', ${surah.id}, '${surah.name}')">📖 اقرأ</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    } else {
+      QURAN_JUZ_LIST.forEach(juz => {
+        const card = document.createElement('div');
+        card.className = 'juz-card';
+        card.innerHTML = `
+          <div class="juz-header">
+            <div class="juz-badge-number">${juz.id}</div>
+          </div>
+          <div class="juz-info">
+            <h3 class="juz-title">${juz.name}</h3>
+            <p class="juz-reader-name" style="font-size: 0.8rem; margin-top:0.25rem;">من: ${juz.startSurah} | إلى: ${juz.endSurah}</p>
+          </div>
+          <div class="juz-actions">
+            <button class="btn-card btn-read" onclick="openFreeReaderModal('juz', ${juz.id}, '${juz.name}')">📖 اقرأ</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+  }
+
+  if (btnSurahs) {
+    btnSurahs.addEventListener('click', () => {
+      currentView = 'surahs';
+      btnSurahs.classList.add('active');
+      if (btnJuzs) btnJuzs.classList.remove('active');
+      renderGrid();
+    });
+  }
+  if (btnJuzs) {
+    btnJuzs.addEventListener('click', () => {
+      currentView = 'juzs';
+      btnJuzs.classList.add('active');
+      if (btnSurahs) btnSurahs.classList.remove('active');
+      renderGrid();
+    });
+  }
+
+  renderGrid();
 }

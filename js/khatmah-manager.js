@@ -40,6 +40,7 @@ class KhatmahManager {
   constructor() {
     this._listeners = [];
     this.state = this._loadLocal();
+    this.cycleCount = parseInt(localStorage.getItem('sad2a_khatmah_cycles') || '0', 10);
     this._initSync();
   }
 
@@ -104,6 +105,15 @@ class KhatmahManager {
           this._notify();
         });
         this._dbRef = dbRef;
+
+        const cycleRef = firebase.database().ref('khatmah_cycle_v1');
+        cycleRef.on('value', snap => {
+          const remoteCount = snap.val() || 0;
+          this.cycleCount = Math.max(this.cycleCount, remoteCount);
+          localStorage.setItem('sad2a_khatmah_cycles', this.cycleCount.toString());
+          this._notify();
+        });
+        this._cycleRef = cycleRef;
       } catch (err) {
         console.warn('[Firebase] init error:', err);
       }
@@ -195,6 +205,26 @@ class KhatmahManager {
     return { success: true, message: 'تم إلغاء الحجز، الورد متاح دلوقتي للكل.' };
   }
 
+  /** Restart entire Khatmah (start new cycle) */
+  restartKhatmah() {
+    const stats = this.getStats();
+    if (stats.completed !== stats.total) {
+      return { success: false, message: 'لا يمكن تصفير الختمة قبل إكمال جميع الأجزاء!' };
+    }
+
+    this.state = buildInitialState();
+    this._saveLocal();
+
+    if (IS_FIREBASE_ENABLED && this._dbRef && this._cycleRef) {
+      this._dbRef.set(this.state);
+      this._cycleRef.transaction(currentCount => {
+        return (currentCount || 0) + 1;
+      });
+    }
+
+    return { success: true, message: 'تم تصفير الختمة بنجاح وبدء ختمة جديدة! في ميزان حسناتكم.' };
+  }
+
   // ── Stats ─────────────────────────────────────────────────
   getStats() {
     const initial = buildInitialState();
@@ -210,7 +240,7 @@ class KhatmahManager {
     const available  = vals.filter(v => v && v.status === 'available').length;
     const reserved   = vals.filter(v => v && v.status === 'reserved').length;
     const completed  = vals.filter(v => v && v.status === 'completed').length;
-    return { total, available, reserved, completed, percentage: Math.round((completed / total) * 100) };
+    return { total, available, reserved, completed, percentage: Math.round((completed / total) * 100), cycleCount: this.cycleCount };
   }
 }
 

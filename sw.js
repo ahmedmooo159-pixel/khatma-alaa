@@ -1,7 +1,7 @@
 // Service Worker - Cache First for App Shell, Network First for API
-// Version 7 - Fix old devices & add Dua Sync
+// Version 9 - Make install button always visible
 
-const CACHE_NAME    = 'sad2a-khatmah-v7';
+const CACHE_NAME    = 'sad2a-khatmah-v9';
 const APP_SHELL     = [
   './',
   './index.html',
