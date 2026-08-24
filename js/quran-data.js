@@ -85,7 +85,7 @@ export async function fetchAndCacheJuz(juzId) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
 
-    if (json.status === 'OK' && json.data?.ayahs) {
+    if (json.status === 'OK' && json.data && json.data.ayahs) {
       const surahMap = {};
       json.data.ayahs.forEach(ayah => {
         const sn = ayah.surah.number;

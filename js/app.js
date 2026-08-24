@@ -2,12 +2,44 @@ import { KHATMAH_PAIRS, fetchAndCacheJuz, isJuzCached, getCachedJuz, pairCacheSt
 import { khatmahManager, getDeviceId, getSavedUserName } from './khatmah-manager.js';
 import { DUA_COLLECTION } from './dua-data.js';
 import { initPWA, isPWAInstalled, promptInstall, deferredPrompt } from './pwa-installer.js';
+import { IS_FIREBASE_ENABLED, FIREBASE_CONFIG } from './firebase-config.js';
 
 let activeFilter = 'all';
 let currentReadingPairId = null;
 let currentFontSize = 1.6;
 
+let remoteDuaCounts = {};
+let duaDbRef = null;
+
+function initDuaSync() {
+  if (!IS_FIREBASE_ENABLED) return;
+  const tryInit = () => {
+    if (!window.firebase) return;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      duaDbRef = firebase.database().ref('duas_v2');
+      duaDbRef.on('value', snap => {
+        const remote = snap.val() || {};
+        remoteDuaCounts = remote;
+        DUA_COLLECTION.forEach(dua => {
+          const btn = document.querySelector(`[data-dua-id="${dua.counterKey}"]`);
+          if (btn) {
+            const local = parseInt(localStorage.getItem(dua.counterKey) || '0', 10);
+            const total = Math.max(local, remote[dua.counterKey] || 0);
+            btn.querySelector('.count-val').textContent = total;
+          }
+        });
+      });
+    } catch (err) {
+      console.warn('[Firebase Duas] init error:', err);
+    }
+  };
+  if (window.firebase) tryInit();
+  else window.addEventListener('load', tryInit);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initDuaSync();
   initPWA();
   initNavigationTabs();
   initMemorialPhotoHandler();
@@ -78,7 +110,10 @@ function initNavigationTabs() {
 
       tab.classList.add('active');
       const targetId = tab.dataset.tab;
-      document.getElementById(targetId)?.classList.add('active');
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.classList.add('active');
+      }
     });
   });
 }
@@ -271,28 +306,32 @@ window.triggerAppInstall = () => {
   promptInstall();
   closeInstallModal();
 };
-  modal?.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.remove('active');
-  });
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+  }
 
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = nameInput.value;
-    if (!name.trim()) return;
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = nameInput.value;
+      if (!name.trim()) return;
 
-    const res = khatmahManager.reservePair(currentReadingPairId, name);
-    if (res.success) {
-      showToast(res.message, 'success');
-      modal.classList.remove('active');
-      // Pre-fetch the Juz text in the background after reservation
-      const pair = KHATMAH_PAIRS.find(p => p.pairId === currentReadingPairId);
-      if(pair) {
-         pair.juzIds.forEach(id => fetchAndCacheJuz(id));
+      const res = khatmahManager.reservePair(currentReadingPairId, name);
+      if (res.success) {
+        showToast(res.message, 'success');
+        modal.classList.remove('active');
+        // Pre-fetch the Juz text in the background after reservation
+        const pair = KHATMAH_PAIRS.find(p => p.pairId === currentReadingPairId);
+        if(pair) {
+           pair.juzIds.forEach(id => fetchAndCacheJuz(id));
+        }
+      } else {
+        showToast(res.message, 'error');
       }
-    } else {
-      showToast(res.message, 'error');
-    }
-  });
+    });
+  }
 }
 
 // Reader View Modal Logic
@@ -372,25 +411,33 @@ function initReaderModal() {
     }
   };
 
-  markDoneBtn?.addEventListener('click', () => {
-    if (currentReadingPairId) window.markAsCompleted(currentReadingPairId);
-  });
+  if (markDoneBtn) {
+    markDoneBtn.addEventListener('click', () => {
+      if (currentReadingPairId) window.markAsCompleted(currentReadingPairId);
+    });
+  }
 
-  closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+  }
 
-  fontPlusBtn?.addEventListener('click', () => {
-    if (currentFontSize < 2.5) {
-      currentFontSize += 0.15;
-      document.getElementById('quran-text-container').style.fontSize = `${currentFontSize}rem`;
-    }
-  });
+  if (fontPlusBtn) {
+    fontPlusBtn.addEventListener('click', () => {
+      if (currentFontSize < 2.5) {
+        currentFontSize += 0.15;
+        document.getElementById('quran-text-container').style.fontSize = `${currentFontSize}rem`;
+      }
+    });
+  }
 
-  fontMinusBtn?.addEventListener('click', () => {
-    if (currentFontSize > 1.1) {
-      currentFontSize -= 0.15;
-      document.getElementById('quran-text-container').style.fontSize = `${currentFontSize}rem`;
-    }
-  });
+  if (fontMinusBtn) {
+    fontMinusBtn.addEventListener('click', () => {
+      if (currentFontSize > 1.1) {
+        currentFontSize -= 0.15;
+        document.getElementById('quran-text-container').style.fontSize = `${currentFontSize}rem`;
+      }
+    });
+  }
 }
 
 // Render Supplications (Duas)
@@ -400,7 +447,8 @@ function renderDuaSection() {
 
   container.innerHTML = '';
   DUA_COLLECTION.forEach(dua => {
-    let count = parseInt(localStorage.getItem(dua.counterKey) || '0', 10);
+    let localCount = parseInt(localStorage.getItem(dua.counterKey) || '0', 10);
+    let count = Math.max(localCount, remoteDuaCounts[dua.counterKey] || 0);
 
     const card = document.createElement('div');
     card.className = 'dua-card';
@@ -410,7 +458,7 @@ function renderDuaSection() {
         <p class="dua-text">"${dua.text}"</p>
       </div>
       <div class="dua-actions">
-        <button class="dua-counter-btn" onclick="incrementDuaCounter('${dua.counterKey}', this)">
+        <button class="dua-counter-btn" data-dua-id="${dua.counterKey}" onclick="incrementDuaCounter('${dua.counterKey}', this)">
           🤲 أَمِّنْ على الدعاء (<span class="count-val">${count}</span>)
         </button>
         <button class="dua-share-btn" onclick="shareDuaText('${dua.text}')">
@@ -423,9 +471,18 @@ function renderDuaSection() {
 }
 
 window.incrementDuaCounter = (counterKey, btnEl) => {
-  let count = parseInt(localStorage.getItem(counterKey) || '0', 10) + 1;
-  localStorage.setItem(counterKey, count.toString());
-  btnEl.querySelector('.count-val').textContent = count;
+  let localCount = parseInt(localStorage.getItem(counterKey) || '0', 10) + 1;
+  localStorage.setItem(counterKey, localCount.toString());
+  
+  const total = Math.max(localCount, (remoteDuaCounts[counterKey] || 0) + 1);
+  btnEl.querySelector('.count-val').textContent = total;
+  
+  if (duaDbRef) {
+    duaDbRef.child(counterKey).transaction((currentVal) => {
+      return Math.max(currentVal || 0, localCount - 1) + 1;
+    });
+  }
+
   showToast('آمين يا رب العالمين.. ربنا يتقبل منك!', 'success');
 };
 
@@ -453,20 +510,26 @@ function initMemorialPhotoHandler() {
     imgs.forEach(img => img.src = savedImg);
   }
 
-  changeBtn?.addEventListener('click', () => input?.click());
-  input?.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target.result;
-        imgs.forEach(img => img.src = base64);
-        localStorage.setItem('sad2a_custom_photo', base64);
-        showToast('تم تغيير الصورة بنجاح!', 'success');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+  if (changeBtn) {
+    changeBtn.addEventListener('click', () => {
+      if (input) input.click();
+    });
+  }
+  if (input) {
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64 = event.target.result;
+          imgs.forEach(img => img.src = base64);
+          localStorage.setItem('sad2a_custom_photo', base64);
+          showToast('تم تغيير الصورة بنجاح!', 'success');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
 }
 
 // Theme Switcher (Dark / Light)
@@ -516,8 +579,14 @@ function initGallery() {
         dots[currentIndex].classList.add('active');
     }
 
-    document.getElementById('gallery-next')?.addEventListener('click', () => goToSlide(currentIndex + 1));
-    document.getElementById('gallery-prev')?.addEventListener('click', () => goToSlide(currentIndex - 1));
+    const nextBtn = document.getElementById('gallery-next');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+    }
+    const prevBtn = document.getElementById('gallery-prev');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+    }
     
     // Auto slide every 4s
     setInterval(() => {
